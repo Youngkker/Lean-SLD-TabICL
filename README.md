@@ -1,5 +1,3 @@
-# Lean-SLD-TabICL
-Lean-SLD-TabICL code
 # TabICL-CDSS for Lean SLD
 
 This repository contains the clinical decision support system (CDSS) source code and the trained TabICL model for our paper: 
@@ -14,9 +12,10 @@ This repository contains the clinical decision support system (CDSS) source code
 ## How to Run the CDSS:
 1. Download all files in this repository to a single local folder.
 2. Ensure you have Python installed, along with the necessary data science packages (e.g., `pandas`, `scikit-learn`, `xgboost`, `shap`). 
-3. Run the `main7.py` script to start the local backend.
-4. Double-click the `index7.html` file to open the calculator in your local web browser.
-5. Input the 8 routine clinical parameters to get real-time risk stratification.
+3. **Open `main7.py` in a text editor and modify the `MODEL_DIR` variable to match the exact folder path where you saved the files.**
+4. Run the `main7.py` script to start the local backend.
+5. Double-click the `index7.html` file to open the calculator in your local web browser.
+6. Input the 8 routine clinical parameters to get real-time risk stratification.
 
 ## Contact
 For any questions regarding the dataset or the code, please contact: yk1998@stu.xjtu.edu.cn
