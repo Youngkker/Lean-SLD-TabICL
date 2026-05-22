@@ -29,7 +29,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL_DIR = r"model file storage address"
+# =====================================================================
+# ⚠️ USER CONFIGURATION REQUIRED / 用户配置区 (MUST MODIFY BEFORE RUNNING)
+# Please change the path below to the exact folder where you saved the .pkl files.
+# 请将下方路径修改为您电脑上存放 .pkl 文件的实际文件夹绝对路径。
+# Example for Windows: MODEL_DIR = r"C:\Users\Downloads\Lean-SLD-TabICL"
+# Example for Mac/Linux: MODEL_DIR = "/Users/username/Downloads/Lean-SLD-TabICL"
+# =====================================================================
+MODEL_DIR = r"Please_Enter_Your_Model_Directory_Here"
 
 model = None
 imputer = None
