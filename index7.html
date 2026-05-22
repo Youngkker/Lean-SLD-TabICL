@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en"> <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TabICL - Lean SLD 智能诊断系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f0f4f3; }
+        .glass { background: rgba(255, 255, 255, 0.95); border-radius: 1.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+<div id="app" class="max-w-6xl mx-auto">
+    <header class="mb-8 flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-black text-teal-900">TabICL <span class="text-teal-600 font-light">AI Engine</span></h1>
+            <p class="text-gray-500 font-medium">{{ t('subtitle') }}</p>
+        </div>
+        <button @click="toggleLang" class="text-sm font-bold text-teal-700 bg-white px-4 py-2 rounded-full shadow-sm hover:bg-teal-50">
+            {{ lang === 'zh' ? 'Switch to English' : '切换至中文' }}
+        </button>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-7 glass p-8">
+            <h2 class="text-xl font-bold mb-6 text-gray-800 border-b pb-4">{{ t('inputTitle') }}</h2>
+
+            <div class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 tracking-widest">{{ t('ethnicity') }}</label>
+                        <select v-model="form.Ethnicity" class="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-teal-500 focus:outline-none transition-all">
+                            <option value="Asian">{{ t('asian') }}</option>
+                            <option value="Western">{{ t('western') }}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 tracking-widest">{{ t('bmi') }}</label>
+                        <input v-model="form.BMI" type="number" step="0.1" class="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-teal-500 focus:outline-none transition-all">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 tracking-widest">{{ t('alt') }}</label>
+                        <input v-model="form.ALT" type="number" class="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-teal-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 tracking-widest">{{ t('tg') }}</label>
+                        <input v-model="form.TG" type="number" step="0.01" class="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-teal-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 tracking-widest">{{ t('ua') }}</label>
+                        <input v-model="form.UA" type="number" class="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-teal-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 tracking-widest">{{ t('glu') }}</label>
+                        <input v-model="form.Glu" type="number" step="0.01" class="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-teal-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 tracking-widest">{{ t('rbc') }}</label>
+                        <input v-model="form.RBC" type="number" step="0.01" class="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-teal-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 tracking-widest">{{ t('ggt') }}</label>
+                        <input v-model="form.GGT" type="number" class="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-teal-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 mb-2 tracking-widest">{{ t('ldl') }}</label>
+                        <input v-model="form.LDL" type="number" step="0.01" class="w-full bg-gray-50 border-2 border-gray-100 rounded-xl px-4 py-3 focus:border-teal-500 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <button @click="predict" :disabled="loading" class="mt-10 w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-teal-200 flex justify-center items-center gap-3">
+                <span v-if="loading" class="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5"></span>
+                {{ loading ? t('processing') : t('btnPredict') }}
+            </button>
+        </div>
+
+        <div class="lg:col-span-5 glass p-8 flex flex-col justify-center min-h-[400px] border-4 border-white">
+            <h2 class="text-xl font-bold mb-6 text-gray-800 border-b pb-4">{{ t('resultTitle') }}</h2>
+
+            <div v-if="result" class="text-center">
+                <p class="text-xs font-bold text-gray-400 tracking-widest mb-2">{{ t('resultLabel') }}</p>
+
+                <div class="text-5xl md:text-6xl font-black mb-6" :class="isHighRisk ? 'text-red-500' : 'text-teal-600'">
+                    {{ isHighRisk ? t('statusHigh') : t('statusLow') }}
+                </div>
+
+                <div class="inline-block px-4 py-1 bg-gray-100 rounded-full text-xs font-mono text-gray-600 mb-8 border">
+                    {{ t('adjustedBmi') }} <span class="font-bold">{{ adjustedBmiRatio }}</span>
+                </div>
+
+                <div class="text-left p-6 rounded-2xl" :class="isHighRisk ? 'bg-red-50 text-red-700 border border-red-100' : 'bg-teal-50 text-teal-700 border border-teal-100'">
+                    <p class="font-bold mb-2 flex items-center gap-2">
+                        <span>{{ isHighRisk ? '⚠️' : '✅' }}</span>
+                        {{ t('clinicalAdviceTitle') }}
+                    </p>
+                    <p class="text-sm leading-relaxed opacity-90">{{ isHighRisk ? t('adviceHigh') : t('adviceLow') }}</p>
+                </div>
+            </div>
+
+            <div v-else class="text-center text-gray-300">
+                <p>{{ t('waiting') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const i18n = {
+        zh: {
+            subtitle: '基于 TabICL 的精瘦型脂肪肝临床辅助诊断系统',
+            inputTitle: '患者临床特征录入',
+            ethnicity: '种族 (用于计算BMI标化值)', asian: '亚洲人 (Cutoff: 23)', western: '西方人 (Cutoff: 25)',
+            bmi: 'BMI (kg/m²)', alt: 'ALT (U/L)', tg: 'TG (mmol/L)', ua: 'UA (μmol/L)',
+            glu: '空腹血糖 (mmol/L)', rbc: '红细胞 (10¹²/L)', ggt: 'GGT (U/L)', ldl: 'LDL (mmol/L)',
+            btnPredict: '执行 AI 评估', processing: '深度网络推理中...',
+            resultTitle: '智能诊断报告', resultLabel: '模型分类结果',
+            statusHigh: '高风险', statusLow: '低风险',
+            adjustedBmi: '该患者标化 BMI 比值界定为:',
+            clinicalAdviceTitle: '临床干预建议',
+            adviceHigh: 'TabICL 模型检测到显著的代谢异常模式。考虑到精瘦人群患病的高隐匿性，强烈建议立即为该患者安排腹部超声（Ultrasound）或肝脏弹性检测（FibroScan）以明确诊断。',
+            adviceLow: 'TabICL 模型未检测到显著的代谢异常模式。当前患病风险较低，建议维持健康饮食与生活习惯，并进行常规年度随访。',
+            waiting: '请在左侧输入 8 项核心临床指标以生成预测报告'
+        },
+        en: {
+            subtitle: 'TabICL-based CDSS for Lean SLD',
+            inputTitle: 'Clinical Features Input',
+            ethnicity: 'Ethnicity (For BMI Normalization)', asian: 'Asian (Cutoff: 23)', western: 'Western (Cutoff: 25)',
+            bmi: 'BMI (kg/m²)', alt: 'ALT (U/L)', tg: 'TG (mmol/L)', ua: 'UA (μmol/L)',
+            glu: 'Fasting Glu (mmol/L)', rbc: 'RBC (10¹²/L)', ggt: 'GGT (U/L)', ldl: 'LDL (mmol/L)',
+            btnPredict: 'Run AI Assessment', processing: 'Running Deep Inference...',
+            resultTitle: 'Diagnostic Report', resultLabel: 'Model Classification',
+            statusHigh: 'High Risk', statusLow: 'Low Risk',
+            adjustedBmi: 'Adjusted BMI Ratio for this patient:',
+            clinicalAdviceTitle: 'Clinical Recommendation',
+            adviceHigh: 'The TabICL model detected significant metabolic abnormalities. Given the elusive nature of Lean SLD, it is strongly recommended to schedule an abdominal ultrasound or FibroScan immediately for definitive diagnosis.',
+            adviceLow: 'No significant metabolic abnormal patterns detected. Current risk is low. Maintain a healthy lifestyle and proceed with routine annual follow-ups.',
+            waiting: 'Enter the 8 core clinical parameters to generate the report.'
+        }
+    }
+
+    Vue.createApp({
+        data() {
+            return {
+                lang: 'en', // 【修改点】这里改成了 'en'，页面默认加载英文
+                loading: false,
+                result: null,
+                numericProb: 0,
+                adjustedBmiRatio: null,
+                form: { Ethnicity: 'Asian', BMI: '', ALT: '', TG: '', UA: '', Glu: '', RBC: '', GGT: '', LDL: '' }
+            }
+        },
+        computed: {
+            isHighRisk() {
+                return this.numericProb >= 2.67;
+            }
+        },
+        methods: {
+            t(key) { return i18n[this.lang][key]; },
+            toggleLang() { this.lang = this.lang === 'zh' ? 'en' : 'zh'; },
+            async predict() {
+                if (!this.form.BMI || !this.form.ALT) {
+                    alert(this.lang === 'zh' ? 'BMI 和 ALT 等核心指标不能为空，请补全数据。' : 'Core parameters like BMI and ALT cannot be empty.');
+                    return;
+                }
+                this.loading = true;
+                try {
+                    const res = await fetch('http://127.0.0.1:8000/predict_nafld', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            Ethnicity: this.form.Ethnicity,
+                            BMI: parseFloat(this.form.BMI),
+                            ALT: parseFloat(this.form.ALT),
+                            TG: parseFloat(this.form.TG) || null,
+                            UA: parseFloat(this.form.UA) || null,
+                            Glu: parseFloat(this.form.Glu) || null,
+                            RBC: parseFloat(this.form.RBC) || null,
+                            GGT: parseFloat(this.form.GGT) || null,
+                            LDL: parseFloat(this.form.LDL) || null
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.status === 'success') {
+                        this.result = data;
+                        this.numericProb = data.prediction.risk_probability;
+
+                        if (data.prediction.adjusted_bmi_ratio) {
+                            this.adjustedBmiRatio = parseFloat(data.prediction.adjusted_bmi_ratio).toFixed(2);
+                        }
+                    }
+                } catch (e) {
+                    alert(this.lang === 'zh' ? '连接失败，请确认本地 Python 后端服务已启动且端口 8000 未被占用。' : 'Connection failed. Ensure local Python backend is running on port 8000.');
+                } finally { this.loading = false; }
+            }
+        }
+    }).mount('#app')
+</script>
+</body>
+</html>
