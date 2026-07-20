@@ -2,7 +2,7 @@
 <html lang="en"> <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TabICL - Lean SLD 智能诊断系统</title>
+    <title>TabICL-based CDSS for Lean SLD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
@@ -16,8 +16,7 @@
 <div id="app" class="max-w-6xl mx-auto">
     <header class="mb-8 flex justify-between items-center">
         <div>
-            <h1 class="text-3xl font-black text-teal-900">TabICL <span class="text-teal-600 font-light">AI Engine</span></h1>
-            <p class="text-gray-500 font-medium">{{ t('subtitle') }}</p>
+            <h1 class="text-2xl font-bold text-gray-800">TabICL-based CDSS for Lean SLD</h1>
         </div>
         <button @click="toggleLang" class="text-sm font-bold text-teal-700 bg-white px-4 py-2 rounded-full shadow-sm hover:bg-teal-50">
             {{ lang === 'zh' ? 'Switch to English' : '切换至中文' }}
@@ -117,7 +116,6 @@
 <script>
     const i18n = {
         zh: {
-            subtitle: '基于 TabICL 的精瘦型脂肪肝临床辅助诊断系统',
             inputTitle: '患者临床特征录入',
             ethnicity: '种族 (用于计算BMI标化值)', asian: '亚洲人 (Cutoff: 23)', western: '西方人 (Cutoff: 25)',
             bmi: 'BMI (kg/m²)', alt: 'ALT (U/L)', tg: 'TG (mmol/L)', ua: 'UA (μmol/L)',
@@ -132,11 +130,10 @@
             waiting: '请在左侧输入 8 项核心临床指标以生成预测报告'
         },
         en: {
-            subtitle: 'TabICL-based CDSS for Lean SLD',
             inputTitle: 'Clinical Features Input',
             ethnicity: 'Ethnicity (For BMI Normalization)', asian: 'Asian (Cutoff: 23)', western: 'Western (Cutoff: 25)',
             bmi: 'BMI (kg/m²)', alt: 'ALT (U/L)', tg: 'TG (mmol/L)', ua: 'UA (μmol/L)',
-            glu: 'Fasting Glu (mmol/L)', rbc: 'RBC (10¹²/L)', ggt: 'GGT (U/L)', ldl: 'LDL (mmol/L)',
+            glu: 'Glu (mmol/L)', rbc: 'RBC (10¹²/L)', ggt: 'GGT (U/L)', ldl: 'LDL (mmol/L)',
             btnPredict: 'Run AI Assessment', processing: 'Running Deep Inference...',
             resultTitle: 'Diagnostic Report', resultLabel: 'Model Classification',
             statusHigh: 'High Risk', statusLow: 'Low Risk',
@@ -151,7 +148,7 @@
     Vue.createApp({
         data() {
             return {
-                lang: 'en', // 【修改点】这里改成了 'en'，页面默认加载英文
+                lang: 'en',
                 loading: false,
                 result: null,
                 numericProb: 0,
